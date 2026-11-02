@@ -10,8 +10,7 @@ const getProById=async(id)=>{
 };
 
 const createPro=async(data)=>{
-    const pro=new proModel(data);
-    return await pro.save();
+    return await proModel.createProduct(data);
 };
 
 const updatePro=async(id,data)=>{
