@@ -1,0 +1,51 @@
+name: docker-cicd
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Install dependencies
+        run: npm install
+
+      
+      - name: Build Docker image
+        run: docker build -t hqdu/tapbackend:latest .
+
+      - name: Push Docker image
+        run: docker push hqdu/tapbackend:latest
+
+      - name: Build frontend Docker image
+        run: docker build -t hqdu/tapfrontend:latest .  
+
+      - name: Push frontend Docker image
+        run: docker push hqdu/tapfrontend:latest  
+
+  deploy:
+    runs-on: self-hosted
+    needs: build
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Pull latest image
+        run: docker pull hqdu/tapbackend:latest
+
+      - name: Pull latest frontend image
+        run: docker pull hqdu/tapfrontend:latest  
+
+      - name: Deploy with Docker Compose
+        working-directory: /home/hqdu/CICDdocker
+       
+        run: docker compose up -d --force-recreate
+
+     
